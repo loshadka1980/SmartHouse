@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{F0DD8534-A6CD-4C07-81B1-9DE1CDF899BF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartHouse", "SmartHouseMain\SmartHouseMain.vcxproj", "{F0DD8534-A6CD-4C07-81B1-9DE1CDF899BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
