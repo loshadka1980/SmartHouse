@@ -214,3 +214,17 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+AHidDemoCppDual/AHidDemoCppDual.sln
+AHidDemoCppDual/AHidDemoCppDual/AHid.h
+AHidDemoCppDual/AHidDemoCppDual/stdafx.h
+AHidDemoCppDual/AHidDemoCppDual/resource.h
+AHidDemoCppDual/AHidDemoCppDual/stdafx.cpp
+AHidDemoCppDual/AHidDemoCppDual/ReadMe.txt
+AHidDemoCppDual/AHidDemoCppDual/Form1.h
+AHidDemoCppDual/AHidDemoCppDual/AHidDemoCppDual.vcxproj
+AHidDemoCppDual/AHidDemoCppDual/AHidDemoCppDual.vcxproj.filters
+AHidDemoCppDual/AHidDemoCppDual/Form1.resX
+AHidDemoCppDual/AHidDemoCppDual/app.rc
+AHidDemoCppDual/AHidDemoCppDual/app.ico
+AHidDemoCppDual/AHidDemoCppDual/AHidDemoCppDual.cpp
+AHidDemoCppDual/AHidDemoCppDual/AssemblyInfo.cpp
