@@ -33,6 +33,136 @@ class AHid_api
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	std::cout << "--Sender" << std::endl;
+	byte b2;
+	int r1 = AHid_Init(0, &b2);
+	switch (r1)
+	{
+	case AHID_OK:
+		std::cout << "Init Ok" << std::endl;
+		break;
+	case AHID_OTHER_ERROR:
+		std::cout << "Init Other error" << std::endl;
+		break;
+	case AHID_LICENSE_ERROR:
+		std::cout << "Init License" << std::endl;
+		break;
+	default:
+		std::cout << "Unknown " << std::endl;
+		break;
+	}
+
+	int pipeS;
+	unsigned int vidS = 5824;
+	unsigned int pidS = 1503;
+
+	int r2 = AHid_Register(&pipeS, vidS, pidS, -1, 0, 8, 2);
+
+	switch (r2)
+	{
+	case AHID_OK:
+		std::cout << "Register Ok" << std::endl;
+		break;
+	case AHID_NOT_INITIALIZED:
+		std::cout << "Register not initialized" << std::endl;
+		break;
+	case AHID_WRONG_PARAMETER:
+		std::cout << "Register wrong param" << std::endl;
+		break;
+	case AHID_LICENSE_ERROR:
+		std::cout << "Register license" << std::endl;
+		break;
+	case AHID_NOT_LISTED:
+		std::cout << "Register not listed" << std::endl;
+		break;
+	case AHID_OTHER_ERROR:
+		std::cout << "Register Device not found" << std::endl;
+		break;
+	default:
+		std::cout << "Register Unknown " << std::endl;
+		break;
+	}
+	
+	_getch();
+	/*
+	int r5 = AHid_Request(pipeS);
+	switch (r5)
+	{
+	case AHID_OK:
+		std::cout << "Req Ok" << std::endl;
+		break;
+	case AHID_NOT_INITIALIZED:
+		std::cout << "Req not initialized" << std::endl;
+		break;
+	case AHID_WRONG_PARAMETER:
+		std::cout << "Req pipe / num of bytes wrong" << std::endl;
+		break;
+	case AHID_IO_ERROR:
+		std::cout << "Req IO error" << std::endl;
+		break;
+	case AHID_NOT_LISTED:
+		std::cout << "Req pipe not listed" << std::endl;
+		break;
+	case AHID_OTHER_ERROR:
+		std::cout << "Req Other error" << std::endl;
+		break;
+	default:
+		std::cout << "Req Unknown " << std::endl;
+		break;
+	}
+	*/
+
+	byte buf2[8];
+	unsigned int actWr = 0;
+
+	buf2[0] = 0 * 1 + 2 * 8 + 2 * 32;
+
+	buf2[1] = 2; // turn on	
+	
+	buf2[2] = 0; // format
+
+	buf2[3] = 0;
+	buf2[4] = 2; // manually assigned num of channel
+
+	buf2[5] = 155;
+	buf2[6] = 155;
+	buf2[7] = 155;
+
+
+	int r3 = AHid_Write(pipeS, buf2, 8, &actWr);
+
+	switch (r3)
+	{
+	case AHID_OK:
+		std::cout << "Wr Ok" << std::endl;
+		break;
+	case AHID_NOT_INITIALIZED:
+		std::cout << "Wr not initialized" << std::endl;
+		break;
+	case AHID_WRONG_PARAMETER:
+		std::cout << "Wr pipe / num of bytes wrong" << std::endl;
+		break;
+	case AHID_IO_ERROR:
+		std::cout << "Wr IO error" << std::endl;
+		break;
+	case AHID_NOT_LISTED:
+		std::cout << "Wr pipe not listed" << std::endl;
+		break;
+	case AHID_OTHER_ERROR:
+		std::cout << "Wr Other error" << std::endl;
+		break;
+	default:
+		std::cout << "Wr Unknown " << std::endl;
+		break;
+	}
+
+	std::cout << "ActWrite " << actWr << std::endl;
+
+	_getch();
+
+
+	return 0;
+
 	std::map <int, std::string> senderNames{ { 2, "Experimental" } };
 	std::map <int, bool> senderStatus;
 
@@ -110,7 +240,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	while (count != 50)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(2200));
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 		count++;
 		std::cout << "count " << count << std::endl;
 
