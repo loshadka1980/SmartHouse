@@ -3,7 +3,16 @@
 #include "sender.h"
 #include "..\..\driver\x86\Ahid.h"
 
-void Sender::issueCommand(const int channel, const bool turnOn)
+void Sender::issueCommand(const std::string &channelName, const bool turnOn)
+{
+	auto it = names.find(channelName);
+	if (it != names.end())
+		issueCommandByID(it->second, turnOn);
+	else
+		throw std::exception("Wrong Name");
+}
+
+void Sender::issueCommandByID(const int channel, const bool turnOn)
 {
 	if (channel > 64 || channel < 0)
 		throw("Send(): Invalid channel ID");
