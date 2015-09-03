@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ahidwrapper.h" />
-    <ClInclude Include="LampState.h" />
     <ClInclude Include="Reciever.h" />
     <ClInclude Include="sender.h" />
     <ClInclude Include="stdafx.h" />
@@ -91,7 +90,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ahidwrapper.cpp" />
-    <ClCompile Include="LampState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Reciever.cpp" />
     <ClCompile Include="Sender.cpp" />
