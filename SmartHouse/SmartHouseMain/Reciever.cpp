@@ -3,6 +3,8 @@
 #include "reciever.h"
 #include "..\..\driver\x86\Ahid.h"
 
+#include <iostream>
+
 Reciever::Reciever() : AhidWrapper(vidReciever, pidReciever), oldTogl(0)
 {
 
@@ -17,7 +19,10 @@ bool Reciever:: obtainCommand(int& senderID, bool& isTurnOn, bool& isNonIncremen
 	int r = 0;
 	r = AHid_Request(pipe);
 	if (r == AHID_IO_ERROR)
+	{
+		std::cout << "Fail: AHID_IO error" << std::endl;
 		return false;                 // frequent on/off signal may trigger this type of error
+	}
 	else if (r != AHID_OK)
 	{
 		processObtainFailure(r);
@@ -32,12 +37,15 @@ bool Reciever:: obtainCommand(int& senderID, bool& isTurnOn, bool& isNonIncremen
 		processObtainFailure(r);
 
 	if (actRead != 8)
-		throw std::exception("obtain(): Incorrect number of butes read");
+		throw std::exception("obtain(): Incorrect number of bytes read");
 
 	// -----------------------
 	int togl = buf[0] & 63;
 	if (togl == oldTogl)
+	{
+		//std::cout << "same togl" << std::endl;
 		return false;
+	}
 
 
 	if (togl != oldTogl + 1 && !(togl == 0 && oldTogl == 63))
@@ -58,7 +66,9 @@ bool Reciever:: obtainCommand(int& senderID, bool& isTurnOn, bool& isNonIncremen
 		isTurnOn = true;
 		break;
 	default:
-		throw std::exception("Obtain(): unknown command type");
+		// throw std::exception("Obtain(): unknown command type");
+		std::cout << "Fail: command type" << std::endl;
+		return false;
 	}
 
 	return true;
