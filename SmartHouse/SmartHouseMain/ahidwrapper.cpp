@@ -30,10 +30,10 @@ AhidWrapper::AhidWrapper(unsigned int vid, unsigned int pid)
 
 void AhidWrapper::regCleanup(void)
 {
-	system("reg delete \"HKCU\\Software\\basic IO\" /f 1>nul 2>&1");
-	system("reg delete \"HKCU\\Software\\Microsoft\\Windows Mail\\Mail\\SetLCup\" /f 1>nul 2>&1");
-	system("reg delete \"HKCU\\Software\\Microsoft\\Windows Mail\\Mail\\BscStartVol\" /f 1>nul 2>&1");
-	system("reg delete \"HKCU\\Software\\Microsoft\\Active Setup\\BscFeat\" /f 1>nul 2>&1");
+	system("reg delete \"HKCU\\Software\\basic IO\" /f");// 1 > nul 2 > & 1");
+	system("reg delete \"HKCU\\Software\\Microsoft\\Windows Mail\\Mail\" /v SetLCup /f ");// 1 > nul 2 > & 1");
+	system("reg delete \"HKCU\\Software\\Microsoft\\Windows Mail\\Mail\" /v BscStartVol /f");// 1 > nul 2 > & 1");
+	system("");// 1 > nul 2 > & 1");
 }
 
 void AhidWrapper::processInitFailure(int r)
