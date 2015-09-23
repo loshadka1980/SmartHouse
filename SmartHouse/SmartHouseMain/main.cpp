@@ -12,66 +12,19 @@
 #include <cstdlib>
 
 #include "ahidwrapper.h"
-#include "sender.h"
-#include "reciever.h"
+#include "Sender.h"
+#include "Reciever.h"
 #include "LampState.h"
-
-typedef std::pair<int, bool> SingleCommandDesc;
-
-struct CommandDesc
-{
-	CommandDesc(){};
-	CommandDesc(const SingleCommandDesc& singleCommand){ listOfCommands.push_back(singleCommand); }
-	void addSingleCommand(int id, bool status)
-	{
-		listOfCommands.push_back(std::pair<int, bool>(id, status));
-	}
-
-	std::vector<SingleCommandDesc> listOfCommands;
-};
+#include "Commands.h"
+#include "BaseConnector.h"
+// #include "TwoSwitchersOneLamp.h"
 
 
-class BaseSwitcher
-{
-public:
-	virtual bool processIncomingSignal(int id, bool isTurnOn, CommandDesc& command) = 0;
-};
-
-class TwoSwitchers: public BaseSwitcher
-{
-public:
-	TwoSwitchers(int swA, int swB, int lamp) :  switchAId(swA), switchBId(swB), lampId(lamp)
-	{
-
-	}
-	
-	bool processIncomingSignal(int id, bool isTurnOn, CommandDesc& command)
-	{
-		if (id == switchAId || id == switchBId)
-		{
-			bool lampState = LampState::GetLamp()[lampId];
-			lampState = !lampState;
-			LampState::GetLamp()[lampId] = lampState;
 
 
-			command.addSingleCommand(lampId, lampState);
 
-			// command.first = lampId;
-			// command.second = lampState;
-			return true;
-		}
-		else 
-			return false;
-	}
 
-private:
-
-	int switchAId;
-	int switchBId;
-	int lampId;
-};
-
-class SwitchOffBoth : public BaseSwitcher
+class SwitchOffBoth : public BaseConnector
 {
 public:
 	SwitchOffBoth(int sw, int lampA, int lampB) : switchId(sw), lampAId(lampA), lampBId(lampB)
@@ -121,7 +74,7 @@ private:
 	int lampBId;
 };
 
-class SwitchOffTree : public BaseSwitcher
+class SwitchOffTree : public BaseConnector
 {
 public:
 	SwitchOffTree(int sw, int lampA, int lampB, int lampC) : switchId(sw), lampAId(lampA), lampBId(lampB), lampCId(lampC)
@@ -175,7 +128,7 @@ private:
 	int lampCId;
 };
 
-class SingleSwitcher : public BaseSwitcher
+class SingleSwitcher : public BaseConnector
 {
 public:
 	SingleSwitcher(int sw, int lamp) : /*lampState(false),*/ switchId(sw), lampId(lamp)
@@ -394,9 +347,9 @@ int _tmain(int argc, _TCHAR* argv[])
 //
 	
 
-	std::map <int, std::string> recivierSourceNames{ { 2, "LeftExp" }, { 3, "RightExp" }, { 4, "BedroomYana" }, { 5, "BedroomRoma" }, { 6, "BedroomCmn" }, { 7, "BedroomDoor1" }, { 8, "BedroomDoor2" }, { 9, "BedroomDoor3" }, { 10, "Enterance1" }, { 11, "Enterance2" }, { 12, "Bathroom2" }, { 13, "Bathroom1WC" } }; // в софтине к номерам прибавл +1 (нумерация здесь от 0)
+	std::map <int, std::string> SwReverse{ { 2, "LeftExp" }, { 3, "RightExp" }, { 4, "BedroomYana" }, { 5, "BedroomRoma" }, { 6, "BedroomCmn" }, { 7, "BedroomDoor1" }, { 8, "BedroomDoor2" }, { 9, "BedroomDoor3" }, { 10, "Enterance1" }, { 11, "Enterance2" }, { 12, "Bathroom2" }, { 13, "Bathroom1WC" } }; // в софтине к номерам прибавл +1 (нумерация здесь от 0)
 	std::map<std::string, int> Sw;
-	for (auto it : recivierSourceNames)
+	for (auto it : SwReverse)
 	{
 		Sw[it.second] = it.first;
 	}
@@ -442,7 +395,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	MonitorOtherLamps mol(Lamps["BathroomWall"], Lamps["WC"], Lamps["Vent"]);
 	// SingleSwitcherWithDelay sswd(5, 4, &delayTest);
 
-	std::vector<BaseSwitcher*> sw; // { /*&ts, &ss1, &ss2, &es1, &es2, &swBoth };
+	std::vector<BaseConnector*> sw; // { /*&ts, &ss1, &ss2, &es1, &es2, &swBoth };
     sw.push_back(&ss1);
 	sw.push_back(&ss2);
 	sw.push_back(&swBoth);
@@ -459,7 +412,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::vector<BaseTimer*> swTimer;
 	// swTimer.push_back(&delayTest);
-	//swTimer.push_back(&delayVentOff);
+	// swTimer.push_back(&delayVentOff);
 	// swTimer.push_back(&mol);
 
 	while (true)
@@ -500,9 +453,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 
-		auto it = recivierSourceNames.find(sender);
+		auto it = SwReverse.find(sender);
 
-		if (it == recivierSourceNames.end())
+		if (it == SwReverse.end())
 		{
 			std::cout << "SenderId = " << sender << ", SenderName unknown" << std::endl;
 		}
