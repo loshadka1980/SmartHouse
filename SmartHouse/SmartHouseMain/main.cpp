@@ -106,6 +106,8 @@ public:
 			//command.second = lampState;
 			command.addSingleCommand(lampAId, lampAState);
 			command.addSingleCommand(lampBId, lampBState);
+			command.addSingleCommand(lampAId, lampAState);
+			command.addSingleCommand(lampBId, lampBState);
 			return true;
 		}
 		else
@@ -282,13 +284,16 @@ public:
 		{
 			command.addSingleCommand(lampControl, true);
 			doWeThinkItIsOn = true;
+			return true;
 		}
 
 		if ((!b1 && !b2) && (bm || doWeThinkItIsOn)) // turn monitored lamp off
 		{
 			command.addSingleCommand(lampControl, false);
 			doWeThinkItIsOn = false;
+			return true;
 		}
+		return false;
 	}
 
 
@@ -341,7 +346,7 @@ private:
 	DelayedTurnOff* pDTS;
 };
 
-const int timeoutSender = 200; // milliseconds
+const int timeoutSender = 250; // milliseconds
 
 const int serviceEventsBase = 701;
 
