@@ -84,18 +84,27 @@
   <ItemGroup>
     <ClInclude Include="ahidwrapper.h" />
     <ClInclude Include="BaseConnector.h" />
+    <ClInclude Include="Bathroom.h" />
     <ClInclude Include="Commands.h" />
+    <ClInclude Include="MotionDetectorOneLamp.h" />
+    <ClInclude Include="OneSwitcherOneLamp.h" />
+    <ClInclude Include="OneSwitcherThreeLamps.h" />
+    <ClInclude Include="OneSwitcherTwoLamps.h" />
     <ClInclude Include="LampState.h" />
     <ClInclude Include="Reciever.h" />
     <ClInclude Include="sender.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SwitcherInBedroom.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TimerBackup.h" />
     <ClInclude Include="TwoSwitchersOneLamp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ahidwrapper.cpp" />
+    <ClCompile Include="Bathroom.cpp" />
     <ClCompile Include="LampState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MotionDetectorOneLamp.cpp" />
     <ClCompile Include="Reciever.cpp" />
     <ClCompile Include="Sender.cpp" />
     <ClCompile Include="stdafx.cpp">

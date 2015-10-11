@@ -6,8 +6,9 @@ class LampState
 public:
 
 	static LampState& GetLamp();
-	bool& operator[](int i);
+	bool operator[](int i) const; 
 
+	void setState(int i, bool b);
 private:
 
 	LampState();

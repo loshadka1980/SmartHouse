@@ -1,4 +1,5 @@
 #pragma once
+#include "Commands.h"
 
 class BaseConnector
 {

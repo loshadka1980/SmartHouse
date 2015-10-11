@@ -65,6 +65,12 @@ bool Reciever:: obtainCommand(int& senderID, bool& isTurnOn, bool& isNonIncremen
 	case 2: // on
 		isTurnOn = true;
 		break;
+	case 5: // door closed
+		isTurnOn = false;
+		break;
+	case 10: // door open
+		isTurnOn = true;
+		break;
 	default:
 		// throw std::exception("Obtain(): unknown command type");
 		std::cout << "Fail: command type" << std::endl;

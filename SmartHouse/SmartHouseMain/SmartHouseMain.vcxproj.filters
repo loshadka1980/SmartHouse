@@ -45,6 +45,27 @@
     <ClInclude Include="BaseConnector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OneSwitcherTwoLamps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OneSwitcherThreeLamps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OneSwitcherOneLamp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SwitcherInBedroom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerBackup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bathroom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionDetectorOneLamp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -64,6 +85,12 @@
     </ClCompile>
     <ClCompile Include="LampState.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bathroom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MotionDetectorOneLamp.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
