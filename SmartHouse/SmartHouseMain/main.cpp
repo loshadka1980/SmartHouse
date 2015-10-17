@@ -25,10 +25,21 @@
 #include "Bathroom.h"
 
 #include <thread>
-#include <conio.h>
+// #include <conio.h>
+#include <windows.h>
 
 
+void issueAllCmds(const CommandDesc allCmds, Sender& s)
+{
+	for (auto scmd = allCmds.listOfCommands.begin(); scmd != allCmds.listOfCommands.end(); ++scmd)
+	{
+		if (scmd != allCmds.listOfCommands.begin())
+			std::this_thread::sleep_for(std::chrono::milliseconds(Sender::timeoutSender));
 
+		s.issueCommandByID(scmd->first, scmd->second);
+
+	}
+}
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -111,6 +122,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			continue;
 		}
 
+		Beep(500, 50);
 
 		auto it = SwReverse.find(sender);
 
@@ -123,9 +135,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			std::cout << "SenderId = " << sender << ", SenderName = " << it->second << std::endl;
 		}
 
+		CommandDesc allCmds;
 
 		auto sit = connectors.begin();
-
 		while (sit != connectors.end())
 		{
 			CommandDesc cmd;
@@ -133,16 +145,21 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				for (auto scmd = cmd.listOfCommands.begin(); scmd != cmd.listOfCommands.end(); ++scmd)
 				{
+					/*
 					if (scmd != cmd.listOfCommands.begin())
 						std::this_thread::sleep_for(std::chrono::milliseconds(Sender::timeoutSender));
 
 					s.issueCommandByID(scmd->first, scmd->second);
-					
+					*/
+					allCmds.addSingleCommand(*scmd);
 				}
 			}
 
 			++sit;
 		}
+		issueAllCmds(allCmds, s);
+		
+
 	}
 
 	_getch();
