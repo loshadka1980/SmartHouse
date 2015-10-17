@@ -27,10 +27,15 @@
 #include <thread>
 // #include <conio.h>
 #include <windows.h>
+#include <mutex>
+
+std::mutex gs;
 
 
 void issueAllCmds(const CommandDesc allCmds, Sender& s)
 {
+	std::lock_guard<std::mutex> l(gs);
+
 	for (auto scmd = allCmds.listOfCommands.begin(); scmd != allCmds.listOfCommands.end(); ++scmd)
 	{
 		if (scmd != allCmds.listOfCommands.begin())
@@ -157,7 +162,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			++sit;
 		}
-		issueAllCmds(allCmds, s);
+		//issueAllCmds(allCmds, s);
+
+		if (!allCmds.isEmpty())
+		{
+			std::thread t(issueAllCmds, allCmds, s);
+			t.detach();
+		}
 		
 
 	}
