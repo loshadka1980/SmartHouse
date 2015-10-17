@@ -12,5 +12,15 @@ struct CommandDesc
 		listOfCommands.push_back(std::pair<int, bool>(id, status));
 	}
 
+	void addSingleCommand(const SingleCommandDesc& scmd)
+	{
+		listOfCommands.push_back(scmd);
+	}
+
+	bool isEmpty(void)
+	{
+		return listOfCommands.empty();
+	}
+
 	std::vector<SingleCommandDesc> listOfCommands;
 };

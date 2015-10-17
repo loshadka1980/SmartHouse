@@ -24,6 +24,9 @@
 #include "SwitcherInBedroom.h"
 #include "Bathroom.h"
 
+#include <thread>
+#include <conio.h>
+
 
 
 
