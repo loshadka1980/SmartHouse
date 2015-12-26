@@ -17,9 +17,7 @@
 #include "LampState.h"
 #include "Commands.h"
 #include "BaseConnector.h"
-// #include "TwoSwitchersOneLamp.h"
 #include "OneSwitcherTwoLamps.h"
-//#include "OneSwitcherThreeLamps.h"
 #include "OneSwitcherOneLamp.h"
 #include "SwitcherInBedroom.h"
 #include "Bathroom.h"
@@ -31,6 +29,39 @@
 
 std::mutex gs;
 
+void issueCmdWithDelay_detached(SingleCommandDesc& scmd, std::chrono::seconds& delay, Sender& s, int hid)
+{
+	std::this_thread::sleep_for(delay);
+	LampState& ls = LampState::GetLamp();
+	std::cout << "A:" << std::endl;
+	bool anyChanges = ls.checkHook(hid);
+	std::cout << "B:" << std::endl;
+	if (!anyChanges)
+	{
+		std::cout << "C:" << std::endl;
+		std::lock_guard<std::mutex> l(gs);
+		std::cout << "D:" << std::endl;
+		std::this_thread::sleep_for(std::chrono::milliseconds(Sender::timeoutSender));
+		std::cout << "E:" << std::endl;
+		s.issueCommandByID(scmd.first, scmd.second);
+		std::cout << "F:" << std::endl;
+		std::this_thread::sleep_for(std::chrono::milliseconds(Sender::timeoutSender));
+		std::cout << "G:" << std::endl;
+	}
+	std::cout << "H:" << std::endl;
+	ls.deregisterHook(hid);
+	std::cout << "J:" << std::endl;
+}
+
+void issueCmdWithDelay(const SingleCommandDesc& scmd, std::chrono::seconds& delay, Sender& s)
+{
+	
+	LampState& ls = LampState::GetLamp();
+	int hid = ls.registerHook(scmd.first);
+
+	std::thread t(issueCmdWithDelay_detached, scmd, delay, s, hid);
+}
+
 
 void issueAllCmds(const CommandDesc allCmds, Sender& s)
 {
@@ -40,8 +71,11 @@ void issueAllCmds(const CommandDesc allCmds, Sender& s)
 	{
 		if (scmd != allCmds.listOfCommands.begin())
 			std::this_thread::sleep_for(std::chrono::milliseconds(Sender::timeoutSender));
-
-		s.issueCommandByID(scmd->first, scmd->second);
+		
+		if (false && (scmd->second == false) && (scmd->first == 5)) // vent
+			issueCmdWithDelay(*scmd, std::chrono::seconds(3), s);
+		else 
+			s.issueCommandByID(scmd->first, scmd->second);	
 
 	}
 }
@@ -127,7 +161,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			continue;
 		}
 
-		Beep(500, 50);
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		// Beep(500, 50);
+
 
 		auto it = SwReverse.find(sender);
 
@@ -166,8 +202,12 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if (!allCmds.isEmpty())
 		{
+			issueAllCmds(allCmds, s);
+			/*
 			std::thread t(issueAllCmds, allCmds, s);
-			t.detach();
+			// t.detach();
+			t.join();
+			*/
 		}
 		
 
