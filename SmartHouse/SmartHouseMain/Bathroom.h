@@ -1,14 +1,15 @@
 #pragma once
 #include "BaseConnector.h"
 #include "LampState.h"
+#include "DelayedActionsManager.h"
 
 
 class Bathroom : public BaseConnector
 {
 public:
-	Bathroom(int swBR, int swWC, int drBR, int drWC, int motDet, int lampB1, int lampB2, int lampWC, int vent)
+	Bathroom(int swBR, int swWC, int drBR, int drWC, int motDet, int lampB1, int lampB2, int lampWC, int vent, DelayedActionsManager& i_dam)
 		: switchBR(swBR), doorBR(drBR), switchWC(swWC), doorWC(drWC), motionDetector(motDet),
-		  lampB1Id(lampB1), lampB2Id(lampB2), lampWCId(lampWC), ventId(vent)
+		lampB1Id(lampB1), lampB2Id(lampB2), lampWCId(lampWC), ventId(vent), dam(i_dam)
 	{
 
 	}
@@ -16,6 +17,8 @@ public:
 	bool processIncomingSignal(int id, bool isTurnOn, CommandDesc& command);
 
 private:
+
+	DelayedActionsManager& dam;
 
 	int switchBR;
 	int doorBR;

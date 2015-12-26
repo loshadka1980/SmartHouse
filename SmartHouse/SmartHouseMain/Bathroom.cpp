@@ -13,7 +13,10 @@ bool Bathroom::processIncomingSignal(int id, bool isTurnOn, CommandDesc& command
 
 			// check if light in WC is off - turn off vent as well. 
 			if (!isLightOnInWC())
-				command.addSingleCommand(ventId, false);
+			{
+				// command.addSingleCommand(ventId, false);
+				dam.triggerDelayedEvent(ventId, false, 60000);
+			}
 		}
 		else
 		{
@@ -23,6 +26,8 @@ bool Bathroom::processIncomingSignal(int id, bool isTurnOn, CommandDesc& command
 
 			// turn vent on
 			command.addSingleCommand(ventId, true);
+			dam.cancelDelayedEvent();
+			
 		}
 		return true;
 	}
@@ -36,7 +41,10 @@ bool Bathroom::processIncomingSignal(int id, bool isTurnOn, CommandDesc& command
 
 			// check if light in Bathroom is off - turn off vent as well. 
 			if (!isLightOnInBathroom())
-				command.addSingleCommand(ventId, false);
+			{
+				// command.addSingleCommand(ventId, false);
+				dam.triggerDelayedEvent(ventId, false, 60000);
+			}
 		}
 		else
 		{
@@ -45,6 +53,7 @@ bool Bathroom::processIncomingSignal(int id, bool isTurnOn, CommandDesc& command
 
 			// turn vent on
 			command.addSingleCommand(ventId, true);
+			dam.cancelDelayedEvent();
 		}
 		return true;
 	}

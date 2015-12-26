@@ -27,6 +27,8 @@
 #include <windows.h>
 #include <mutex>
 
+#include "DelayedActionsManager.h"
+
 std::mutex gs;
 
 void issueCmdWithDelay_detached(SingleCommandDesc& scmd, std::chrono::seconds& delay, Sender& s, int hid)
@@ -63,7 +65,7 @@ void issueCmdWithDelay(const SingleCommandDesc& scmd, std::chrono::seconds& dela
 }
 
 
-void issueAllCmds(const CommandDesc allCmds, Sender& s)
+void issueAllCmds(const CommandDesc allCmds, SenderAPI* s)
 {
 	std::lock_guard<std::mutex> l(gs);
 
@@ -72,10 +74,7 @@ void issueAllCmds(const CommandDesc allCmds, Sender& s)
 		if (scmd != allCmds.listOfCommands.begin())
 			std::this_thread::sleep_for(std::chrono::milliseconds(Sender::timeoutSender));
 		
-		if (false && (scmd->second == false) && (scmd->first == 5)) // vent
-			issueCmdWithDelay(*scmd, std::chrono::seconds(3), s);
-		else 
-			s.issueCommandByID(scmd->first, scmd->second);	
+		s->issueCommandByID(scmd->first, scmd->second);	
 
 	}
 }
@@ -87,13 +86,45 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 	std::cout << "-- Sender initialization" << std::endl;
 
-	Sender s;
+	Sender* sPReal = nullptr;
+	TestSender* sPTest = nullptr;
+
+	SenderAPI* s = nullptr; 
+	
+	bool testImpl = false;
+
+	std::string current_exec_name = argv[0]; // Name of the current exec program
+	std::string first_arge;
+	std::vector<std::string> all_args;
+
+	if (argc > 1) 
+	{
+		first_arge = argv[1];
+		all_args.assign(argv + 1, argv + argc);
+	}
+
+	if (first_arge == "-test")
+		testImpl = true;
+
+	
+	if (!testImpl)
+	{
+		sPReal = new Sender();
+		s = sPReal;
+	}
+	else
+	{
+		sPTest = new TestSender();
+		s = sPTest;
+	}
+
+
 
 	std::cout << "-- Sender check" << std::endl;
 
 	std::map < std::string, int> Lamps({ { "Exp", 2 }, { "BedroomYana", 3 }, { "BedroomRoma", 4 }, { "Vent", 5 }, { "Koridor", 7 }, { "BedroomCeiling", 8 }, { "AnteroomSmall", 9 }, { "AnteroomLarge", 10 }, { "BathroomWall", 11 }, { "BathroomCeiling", 12 }, { "WC", 13 } }); // в софтине к номерам прибавл +1 (нумерация здесь от 0)
-	s.names = Lamps;
-	s.check();
+	s->names = Lamps;
+	s->check();
 	
 
 	//
@@ -112,9 +143,26 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::cout << "--Reciever Init" << std::endl;
 
-	Reciever r;
+	Reciever* rPReal;
+	TestReciever* rPTest;
+
+	RecieverAPI* r;
+	if (!testImpl)
+	{
+		rPReal = new Reciever();
+		r = rPReal;
+	}
+	else
+	{
+		rPTest = new TestReciever();
+		r = rPTest;
+	}
 
 	std::cout << "--Main Loop" << std::endl;
+
+	//------------------------
+	// Delayed
+	DelayedActionsManager dam;
 
 	std::vector<BaseConnector*> connectors; 
 
@@ -134,34 +182,46 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Bathroom
 	// OneSwitcherTwoLamps c1(Sw["Bathroom2"], Lamps["BathroomWall"], Lamps["BathroomCeiling"]); connectors.push_back(&c1);
 	// OneSwitcherOneLamp c2(Sw["Bathroom1WC"], Lamps["WC"]); connectors.push_back(&c2);
-	Bathroom brm(Sw["Bathroom2"], Sw["Bathroom1WC"], Sw["BathroomDoor"], Sw["WcDoor"], Sw["MotDetBathroom"], Lamps["BathroomWall"], Lamps["BathroomCeiling"], Lamps["WC"], Lamps["Vent"]); connectors.push_back(&brm);
+	Bathroom brm(Sw["Bathroom2"], Sw["Bathroom1WC"], Sw["BathroomDoor"], Sw["WcDoor"], Sw["MotDetBathroom"], Lamps["BathroomWall"], Lamps["BathroomCeiling"], Lamps["WC"], Lamps["Vent"], dam); connectors.push_back(&brm);
 
 	// Locker
 	OneSwitcherTwoLamps l1(Sw["LockerRight"], Lamps["AnteroomSmall"], Lamps["AnteroomLarge"]); connectors.push_back(&l1);
 
+
+
+
 	while (true)
 	{
+		CommandDesc allCmds;
 
+		/**************************************/
+		if (dam.monitor(allCmds))
+		{
+			issueAllCmds(allCmds, s);
+		}
+		/**************************************/
 
 
 		int sender = -1;
 		bool newStatus = false;
 		bool isNonIncremental = false;
 
-		if (!r.obtainCommand(sender, newStatus, isNonIncremental))
+		if (!r->obtainCommand(sender, newStatus, isNonIncremental))
 		{
 			//std::cout << "Failed to obtain command. Skip further actions. " << std::endl;
 			// hee
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			continue;
 		}
-
+		else
 		if (isNonIncremental)
 		{
 			std::cout << "New togl is not incremental from the previous one, initialization or missed some commands. Skip further actions. " << std::endl;
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			continue;
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		
 		// Beep(500, 50);
 
 
@@ -176,7 +236,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			std::cout << "SenderId = " << sender << ", SenderName = " << it->second << std::endl;
 		}
 
-		CommandDesc allCmds;
+		
 
 		auto sit = connectors.begin();
 		while (sit != connectors.end())
@@ -202,12 +262,16 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if (!allCmds.isEmpty())
 		{
+			
 			issueAllCmds(allCmds, s);
+			
 			/*
 			std::thread t(issueAllCmds, allCmds, s);
-			// t.detach();
-			t.join();
-			*/
+			 t.detach();
+			 
+			 t.join();
+			 */
+			
 		}
 		
 

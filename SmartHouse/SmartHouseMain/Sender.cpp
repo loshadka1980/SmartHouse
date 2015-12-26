@@ -8,13 +8,19 @@
 #include "LampState.h"
 #include "..\..\driver\x86\Ahid.h"
 
-void Sender::issueCommand(const std::string &channelName, const bool turnOn)
+void SenderAPI::issueCommand(const std::string &channelName, const bool turnOn)
 {
 	auto it = names.find(channelName);
 	if (it != names.end())
 		issueCommandByID(it->second, turnOn);
 	else
 		throw std::exception("Wrong Name");
+}
+
+void SenderAPI::updateLampState(int channel, bool turnOn)
+{
+	LampState& l = LampState::GetLamp();
+	l.setState(channel, turnOn);
 }
 
 void Sender::issueCommandByID(const int channel, const bool turnOn)
@@ -50,10 +56,11 @@ void Sender::issueCommandByID(const int channel, const bool turnOn)
 	if (actWr != 8)
 		throw("Send(): Invalid num of bytes sent");
 
+	updateLampState(channel, turnOn);
 
-	LampState& l = LampState::GetLamp();
-	l.setState(channel, turnOn);
 }
+
+
 
 void Sender::check(void)
 {
@@ -101,3 +108,20 @@ void Sender::processSendFailure(int r)
 		break;
 	}
 }
+
+void TestSender::issueCommandByID(const int channel, const bool turnOn)
+{
+	updateLampState(channel, turnOn);
+
+	std::cout << "Imitating sending command to channel " << channel << ", command = ";
+	if (turnOn)
+		std::cout << "On";
+	else
+		std::cout << "Off";
+	std::cout << std::endl;
+}
+
+void TestSender::check(void)
+{
+	std::cout << "Imitating sender check" << std::endl;
+};

@@ -4,6 +4,7 @@
 #include "..\..\driver\x86\Ahid.h"
 
 #include <iostream>
+#include <windows.h> // for test reciever
 
 Reciever::Reciever() : AhidWrapper(vidReciever, pidReciever), oldTogl(0)
 {
@@ -103,5 +104,39 @@ void Reciever::processObtainFailure(int r)
 	default:
 		throw std::exception("Obtain(): Unknown");
 		break;
+	}
+}
+
+
+bool iskeypressed(unsigned timeout_ms = 0)
+{
+	return WaitForSingleObject(
+		GetStdHandle(STD_INPUT_HANDLE),
+		timeout_ms
+		) == WAIT_OBJECT_0;
+}
+
+bool TestReciever::obtainCommand(int& senderID, bool& isTurnOn, bool& isNonIncrementalFlag)
+{
+	
+	if (!iskeypressed() )
+		return false;
+	else
+	{
+		int a = -1;
+		std::cin >> senderID >> a;
+		if (a == 0)
+			isTurnOn = false;
+		else if (a == 1)
+			isTurnOn = true;
+		else
+			return false;
+		std::cout << "Imitated received command from channel " << senderID << " , status = ";
+		if (isTurnOn)
+			std::cout << "On";
+		else
+			std::cout << "Off";
+		std::cout << std::endl;
+		return true;
 	}
 }

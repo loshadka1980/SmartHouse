@@ -1,7 +1,21 @@
 #pragma once
 #include "ahidwrapper.h"
 
-class Reciever : public AhidWrapper
+class RecieverAPI
+{
+public:
+	virtual bool obtainCommand(int& senderID, bool& isTurnOn, bool& isNonIncrementalFlag) = 0;
+};
+
+
+class TestReciever: public RecieverAPI
+{
+public:
+	virtual bool obtainCommand(int& senderID, bool& isTurnOn, bool& isNonIncrementalFlag);
+};
+
+
+class Reciever : public AhidWrapper, public RecieverAPI
 {
 public:
 	Reciever();
