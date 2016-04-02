@@ -133,7 +133,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::map <int, std::string> SwReverse{ { 2, "LeftExp" }, { 3, "RightExp" }, { 4, "BedroomYana" }, { 5, "BedroomRoma" }, { 6, "BedroomCmn" },
 	{ 7, "BedroomDoor1" }, { 8, "BedroomDoor2" }, { 9, "BedroomDoor3" }, { 10, "Enterance1" }, { 11, "Enterance2" },
 	{ 12, "Bathroom2" }, { 13, "Bathroom1WC" }, { 14, "BathroomDoor" }, { 15, "MotDetBathroom" }, { 16, "WcDoor" },
-	{17, "LockerLeft"}, {18, "LockerRight"} }; // в софтине к номерам прибавл +1 (нумерация здесь от 0)
+	{17, "LockerLeft"}, {18, "LockerRight"},
+	{ 19, "MotDetInsideBathroom" }, {20, "MotDetInsideToilet"} }; // в софтине к номерам прибавл +1 (нумерация здесь от 0)
 	std::map<std::string, int> Sw;
 	for (auto it : SwReverse)
 	{
@@ -182,7 +183,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Bathroom
 	// OneSwitcherTwoLamps c1(Sw["Bathroom2"], Lamps["BathroomWall"], Lamps["BathroomCeiling"]); connectors.push_back(&c1);
 	// OneSwitcherOneLamp c2(Sw["Bathroom1WC"], Lamps["WC"]); connectors.push_back(&c2);
-	Bathroom brm(Sw["Bathroom2"], Sw["Bathroom1WC"], Sw["BathroomDoor"], Sw["WcDoor"], Sw["MotDetBathroom"], Lamps["BathroomWall"], Lamps["BathroomCeiling"], Lamps["WC"], Lamps["Vent"], dam); connectors.push_back(&brm);
+	Bathroom brm(Sw["Bathroom2"], Sw["Bathroom1WC"], Sw["BathroomDoor"], Sw["WcDoor"], Sw["MotDetInsideBathroom"], Sw["MotDetInsideToilet"], Lamps["BathroomWall"], Lamps["BathroomCeiling"], Lamps["WC"], Lamps["Vent"], dam); connectors.push_back(&brm);
 
 	// Locker
 	OneSwitcherTwoLamps l1(Sw["LockerRight"], Lamps["AnteroomSmall"], Lamps["AnteroomLarge"]); connectors.push_back(&l1);

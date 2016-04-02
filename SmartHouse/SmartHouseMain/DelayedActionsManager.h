@@ -1,46 +1,17 @@
 #pragma once
 #include <chrono>
+#include <map>
+#include "Commands.h"
 
-//******************************
-class DelayedActionsManager
+class DelayedSingleAction
 {
 public:
-	DelayedActionsManager()
-	{
-		isInitialized = false;
-		channel = 0;
-		action = false;
-		targetDelay = 0;
-	}
+	DelayedSingleAction();
 
-	void triggerDelayedEvent(int _channel, bool _action, int _targetDelay)
-	{
-		delayedEventInitialization = std::chrono::system_clock::now();
-		isInitialized = true;
-		channel = _channel;
-		action = _action;
-		targetDelay = _targetDelay;
-	}
+	void triggerDelayedEvent(int _channel, bool _action, int _targetDelay);
+	void cancelDelayedEvent(void);
+	bool monitor(CommandDesc& acmds);
 
-	void cancelDelayedEvent(void)
-	{
-		isInitialized = false;
-	}
-
-	bool monitor(CommandDesc& acmds)
-	{
-		if (!isInitialized)
-			return false;
-		std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
-		if (std::chrono::duration_cast<std::chrono::milliseconds>(tp - delayedEventInitialization).count() > targetDelay)
-		{
-			isInitialized = false;
-			acmds.addSingleCommand(channel, action);
-			return true;
-		}
-		else
-			return false;
-	}
 
 private:
 	std::chrono::system_clock::time_point delayedEventInitialization;
@@ -49,4 +20,20 @@ private:
 	int channel;
 	bool action;
 };
+
+class DelayedActionsManager
+{
+public:
+	DelayedActionsManager();
+
+	void triggerDelayedEvent(int index, int _channel, bool _action, int _targetDelay);
+	void cancelDelayedEvent(int index);
+	bool monitor(CommandDesc& acmds);
+
+
+private:
+	std::map<int, DelayedSingleAction> da;
+
+};
+
 //******************************

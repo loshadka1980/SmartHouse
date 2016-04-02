@@ -33,6 +33,7 @@ void AhidWrapper::regCleanup(void)
 	system("reg delete \"HKEY_CURRENT_USER\\Software\\basic IO\" /f");// 1 > nul 2 > & 1");
 	system("reg delete \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows Mail\\Mail\" /v SetLCup /f ");// 1 > nul 2 > & 1");
 	system("reg delete \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows Mail\\Mail\" /v BscStartVol /f");// 1 > nul 2 > & 1");
+	system("reg delete \"HKEY_CURRENT_USER\\Software\\Microsoft\\Active Setup\\BscFeat\" /f");
 	system("");// 1 > nul 2 > & 1");
 }
 
