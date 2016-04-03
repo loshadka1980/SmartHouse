@@ -106,6 +106,7 @@
     <ClCompile Include="Bathroom.cpp" />
     <ClCompile Include="DelayedActionsManager.cpp" />
     <ClCompile Include="LampState.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MotionDetectorOneLamp.cpp" />
     <ClCompile Include="Reciever.cpp" />

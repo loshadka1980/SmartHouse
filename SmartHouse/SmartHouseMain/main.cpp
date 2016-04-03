@@ -28,9 +28,11 @@
 #include <mutex>
 
 #include "DelayedActionsManager.h"
+#include "Logger.h"
+
 
 std::mutex gs;
-
+/*
 void issueCmdWithDelay_detached(SingleCommandDesc& scmd, std::chrono::seconds& delay, Sender& s, int hid)
 {
 	std::this_thread::sleep_for(delay);
@@ -64,6 +66,7 @@ void issueCmdWithDelay(const SingleCommandDesc& scmd, std::chrono::seconds& dela
 	std::thread t(issueCmdWithDelay_detached, scmd, delay, s, hid);
 }
 
+*/
 
 void issueAllCmds(const CommandDesc allCmds, SenderAPI* s)
 {
@@ -122,7 +125,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::cout << "-- Sender check" << std::endl;
 
-	std::map < std::string, int> Lamps({ { "Exp", 2 }, { "BedroomYana", 3 }, { "BedroomRoma", 4 }, { "Vent", 5 }, { "Koridor", 7 }, { "BedroomCeiling", 8 }, { "AnteroomSmall", 9 }, { "AnteroomLarge", 10 }, { "BathroomWall", 11 }, { "BathroomCeiling", 12 }, { "WC", 13 } }); // в софтине к номерам прибавл +1 (нумерация здесь от 0)
+	std::map < std::string, int> Lamps({ { "Exp", 2 }, { "BedroomYana", 3 }, { "BedroomRoma", 4 }, { "Vent", 5 }, 
+	{ "Koridor", 7 }, { "BedroomCeiling", 8 }, { "AnteroomSmall", 9 }, { "AnteroomLarge", 10 }, 
+	{ "BathroomWall", 11 }, { "BathroomCeiling", 12 }, { "WC", 13 } }); // в софтине к номерам прибавл +1 (нумерация здесь от 0)
 	s->names = Lamps;
 	s->check();
 	
@@ -223,6 +228,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 		
+		
 		// Beep(500, 50);
 
 
@@ -231,10 +237,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (it == SwReverse.end())
 		{
 			std::cout << "SenderId = " << sender << ", SenderName unknown" << std::endl;
+			Logger::Get().record(sender, "Unknown", newStatus);
 		}
 		else
 		{
 			std::cout << "SenderId = " << sender << ", SenderName = " << it->second << std::endl;
+			Logger::Get().record(sender, it->second, newStatus);
 		}
 
 		

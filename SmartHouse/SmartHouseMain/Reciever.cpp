@@ -2,6 +2,7 @@
 #include <exception>
 #include "reciever.h"
 #include "..\..\driver\x86\Ahid.h"
+#include "Logger.h"
 
 #include <iostream>
 #include <windows.h> // for test reciever
@@ -77,6 +78,8 @@ bool Reciever:: obtainCommand(int& senderID, bool& isTurnOn, bool& isNonIncremen
 		std::cout << "Fail: command type" << std::endl;
 		return false;
 	}
+
+
 
 	return true;
 

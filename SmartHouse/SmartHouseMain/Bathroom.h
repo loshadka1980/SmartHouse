@@ -45,5 +45,14 @@ private:
 		return l[lampWCId];
 	}
 
-	void turnLightandVentOn(CommandDesc& cd);
+	void turnBMLightandVentOn(CommandDesc& cd);
+	void turnBMLightandVentOff(CommandDesc& cd);
+
+	void turnWCLightandVentOn(CommandDesc& cd);
+	void turnWCLightandVentOff(CommandDesc& cd);
+
+	void turnVentOn(CommandDesc& cd);
+
+	void createDelayedTurnOffBM();
+	void createDelayedTurnOffWC();
 };

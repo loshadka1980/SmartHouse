@@ -5,81 +5,100 @@ const int ventIndex = 1;
 const int rr1 = 2;
 const int rr2 = 3;
 const int rr3 = 4;
+const int rr4 = 5;
+const int rr5 = 6;
 
-void Bathroom::turnLightandVentOn(CommandDesc& command)
+
+const int delayedMotion = 600000; // 600 sec
+const int delayedVent = 20000; // 20 sec
+
+// 1. включаем свет если 
+//		a. Свет не горит и нажали кнопку
+//		b. Свет не горит и открыли дверь
+//		c. Свет не горит и задетектировали движение
+// 2. выключаем свет если
+//		а. Свет горит и нажали кнопку
+// 3. При включении света создаем отложенное выключение
+// 4.	a. При выключении света и в ванной и в туалете создаем отложенное выключение вентилятора
+//		b. При обратном включении сбрасываем отложенное выключение
+// 5. При движении обновляем отложенное выключение
+
+
+void Bathroom::turnVentOn(CommandDesc& command)
 {
-	// turn light in Bathroom on
+	command.addSingleCommand(ventId, true);
+	dam.cancelDelayedEvent(ventIndex); // Implements req (4b.)
+}
+
+void Bathroom::turnBMLightandVentOn(CommandDesc& command)
+{
 	command.addSingleCommand(lampB1Id, true);
 	command.addSingleCommand(lampB2Id, true);
 
-	// turn vent on
-	command.addSingleCommand(ventId, true);
-	dam.cancelDelayedEvent(ventIndex);
+	turnVentOn(command);
+
+	createDelayedTurnOffBM(); // req 3
+}
+
+void Bathroom::turnBMLightandVentOff(CommandDesc& command)
+{
+	command.addSingleCommand(lampB1Id, false);
+	command.addSingleCommand(lampB2Id, false);
+
+	if (!isLightOnInWC())
+		dam.triggerDelayedEvent(ventIndex, ventId, false, delayedVent); // req 4a
+}
+
+void Bathroom::turnWCLightandVentOn(CommandDesc& command)
+{
+	command.addSingleCommand(lampWCId, true);
+
+	turnVentOn(command);
+
+	createDelayedTurnOffWC(); // req 3
+}
+
+void Bathroom::turnWCLightandVentOff(CommandDesc& command)
+{
+	command.addSingleCommand(lampWCId, false);
+
+	if (!isLightOnInBathroom())
+		dam.triggerDelayedEvent(ventIndex, ventId, false, delayedVent); // req 4a
+}
+
+void Bathroom::createDelayedTurnOffBM()
+{
+	dam.triggerDelayedEvent(rr1, lampB1Id, false, delayedMotion); 
+	dam.triggerDelayedEvent(rr2, lampB2Id, false, delayedMotion);
+	dam.triggerDelayedEvent(rr3, ventId, false, delayedMotion);
+}
+
+void Bathroom::createDelayedTurnOffWC()
+{
+	dam.triggerDelayedEvent(rr4, lampWCId, false, delayedMotion); 
+	dam.triggerDelayedEvent(rr3, ventId, false, delayedMotion);
 }
 
 bool Bathroom::processIncomingSignal(int id, bool isTurnOn, CommandDesc& command)
 {
+	if (!isLightOnInBathroom() && (id == switchBR || (id == doorBR && isTurnOn /* = door is opening */) || (id == motionDetectorBathroom && isTurnOn)))
+		turnBMLightandVentOn(command); // req 1abc - bathroom
+
+	if (isLightOnInBathroom() && id == switchBR)
+		turnBMLightandVentOff(command); // req 2 - bathroom
+
+	if (!isLightOnInWC() && (id == switchWC || (id == doorWC && isTurnOn /* = door is opening */) || (id == motionDetectorToilet && isTurnOn)))
+		turnBMLightandVentOn(command); // req 1abc - wc
+
+	if (isLightOnInWC() && id == switchWC)
+		turnBMLightandVentOff(command); // req 2 - wc
+
+
 	if (id == motionDetectorBathroom && isTurnOn)
-	{
-		dam.cancelDelayedEvent(rr1); // clean monitor
-		dam.cancelDelayedEvent(rr2);
-		dam.cancelDelayedEvent(rr3);
-		dam.triggerDelayedEvent(rr1, lampB1Id, false, 1200000); // start count again
-		dam.triggerDelayedEvent(rr2, lampB2Id, false, 1200000);
-		dam.triggerDelayedEvent(rr3, ventId, false, 1200000);
+		createDelayedTurnOffBM(); // req 5
 
-		if (!isLightOnInBathroom())
-			turnLightandVentOn(command);
-	}
-	
-	if (id == switchBR || (id == doorBR && isTurnOn /* = door is opening */ && !isLightOnInBathroom()))
-	{
-		if (isLightOnInBathroom())
-		{
-			// turn it off
-			command.addSingleCommand(lampB1Id, false);
-			command.addSingleCommand(lampB2Id, false);
+	if (id == motionDetectorToilet && isTurnOn)
+		createDelayedTurnOffWC(); // req 5
 
-			// check if light in WC is off - turn off vent as well. 
-			if (!isLightOnInWC())
-			{
-				// command.addSingleCommand(ventId, false);
-				dam.triggerDelayedEvent(ventIndex, ventId, false, 60000);
-			}
-		}
-		else
-		{
-			turnLightandVentOn(command);
-		}
-		return true;
-	}
-
-	if (id == switchWC || (id == doorWC && isTurnOn /* = door is opening */ && !isLightOnInWC()))
-	{
-		if (isLightOnInWC())
-		{
-			// turn it off
-			command.addSingleCommand(lampWCId, false);
-
-			// check if light in Bathroom is off - turn off vent as well. 
-			if (!isLightOnInBathroom())
-			{
-				// command.addSingleCommand(ventId, false);
-				dam.triggerDelayedEvent(ventIndex, ventId, false, 60000);
-			}
-		}
-		else
-		{
-			// turn light in WC on
-			command.addSingleCommand(lampWCId, true);
-
-			// turn vent on
-			command.addSingleCommand(ventId, true);
-			dam.cancelDelayedEvent(ventIndex);
-		}
-		return true;
-	}
-
-	return false;
-
+	return !command.isEmpty();
 }
