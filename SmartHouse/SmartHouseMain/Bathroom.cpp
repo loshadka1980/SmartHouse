@@ -88,10 +88,10 @@ bool Bathroom::processIncomingSignal(int id, bool isTurnOn, CommandDesc& command
 		turnBMLightandVentOff(command); // req 2 - bathroom
 
 	if (!isLightOnInWC() && (id == switchWC || (id == doorWC && isTurnOn /* = door is opening */) || (id == motionDetectorToilet && isTurnOn)))
-		turnBMLightandVentOn(command); // req 1abc - wc
+		turnWCLightandVentOn(command); // req 1abc - wc
 
 	if (isLightOnInWC() && id == switchWC)
-		turnBMLightandVentOff(command); // req 2 - wc
+		turnWCLightandVentOff(command); // req 2 - wc
 
 
 	if (id == motionDetectorBathroom && isTurnOn)

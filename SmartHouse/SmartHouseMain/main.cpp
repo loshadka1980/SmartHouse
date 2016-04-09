@@ -204,6 +204,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (dam.monitor(allCmds))
 		{
 			issueAllCmds(allCmds, s);
+			std::this_thread::sleep_for(std::chrono::milliseconds(Sender::timeoutSender));
 		}
 		/**************************************/
 
